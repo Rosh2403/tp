@@ -5,17 +5,19 @@ import java.util.ArrayList;
 public class TransactionManager {
     private final ArrayList<Transaction> transactions = new ArrayList<>();
 
-    public void add(Transaction t) {
+    public void addTransaction(Transaction t) {
+        while (idExists(t.getHashId())) {
+            t.regenerateHashId();
+        }
         transactions.add(t);
     }
 
-    public void listAll() {
-        if (transactions.isEmpty()) {
-            System.out.println("Your wallet is empty (and so is this list).");
-            return;
-        }
-        for (Transaction t : transactions) {
-            System.out.println(t);
-        }
+    // TODO: implement a more robust collision handling
+    private boolean idExists(String hashId) {
+        return false;
+    }
+
+    public ArrayList<Transaction> getTransactions() {
+        return transactions;
     }
 }

@@ -28,4 +28,9 @@ public class Transaction {
         return String.format("[%s] %s | %s | $%.2f | %s | %s",
                 hashId, type.toUpperCase(), date, amount, category, description);
     }
+
+    // TODO: implement a more robust hash handling
+    public void regenerateHashId() {
+
+    }
 }

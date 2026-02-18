@@ -1,5 +1,7 @@
 package seedu.RLAD;
 
+import seedu.RLAD.command.Command;
+
 import java.util.Scanner;
 
 public class Ui {
@@ -21,7 +23,7 @@ public class Ui {
     }
 
     // no throwable error for now
-    public void showError(String message) {
+    public void showError (String message) {
         System.out.println("ERROR: " + message);
     }
 
@@ -37,21 +39,20 @@ public class Ui {
         showLine();
         System.out.println("Hello and welcome to RLAD!");
         System.out.println("Handle your financial life from one spot without the spreadsheet headaches");
-        System.out.println("\nFormat:");
-        System.out.println("\t$action --option_0 $argument_0 ... --option_k $argument_k");
-        System.out.println("\nCommands: add, delete, modify, list, summarize, help, exit");
-        System.out.println("\tadd, delete, modify, list, summarize, help, exit");
-        System.out.println("Type 'help' for the full list or '$action help' for specific details.");
+        printPossibleOptions();
+        System.out.println("Type 'help' for the full list or '$action help' for specific argument details.");
         showLine();
     }
 
     public void printPossibleOptions() {
-        System.out.println("Available Actions:");
+        System.out.println("Available actions:");
         System.out.println("  add       : Record a new transaction");
         System.out.println("  modify    : Edit an existing entry");
         System.out.println("  delete    : Remove an entry");
         System.out.println("  list      : View your transaction history with filters");
         System.out.println("  summarize : Get a high-level breakdown of your spending");
+        System.out.println("\nFormat:");
+        System.out.println("\t$action --option_0 $argument_0 ... --option_k $argument_k");
     }
 
     public void printAddManual() {
@@ -92,5 +93,9 @@ public class Ui {
         System.out.println("Options: --by [category|month|type]");
         System.out.println("Example:");
         System.out.println("  summarize --by category");
+    }
+
+    public void printCommandOutput(Command command) {
+        System.out.println(command.toString());
     }
 }

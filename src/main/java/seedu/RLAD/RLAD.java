@@ -1,5 +1,8 @@
 package seedu.RLAD;
 
+import seedu.RLAD.command.Command;
+import seedu.RLAD.exception.RLADException;
+
 public class RLAD {
    private final Ui ui;
    private final TransactionManager transactions;
@@ -14,19 +17,39 @@ public class RLAD {
         boolean isExit = false;
 
         while (!isExit) {
-            String fullCommand = ui.readCommand();
-            ui.showLine();
+            try {
+                String input = ui.readCommand();
 
-            // temporary logic until parser is completed
-            if (fullCommand.equalsIgnoreCase("exit")) {
-                isExit = true;
-                ui.showExit();
-            } else if (fullCommand.equalsIgnoreCase("list")) {
-                transactions.listAll();
-            } else {
-                ui.showError("I don't know how to '" + fullCommand + "' yet!");
+                if (input.trim().equalsIgnoreCase("exit")) {
+                    isExit = true;
+                    ui.showExit();
+                    continue;
+                }
+
+                ui.showLine();
+
+                // The parser returns the exact command type to execute
+                Command cmd = Parser.parse(input);
+
+                // Custom error check for each Command class
+                if (cmd.hasValidArgs()) {
+                    cmd.execute(transactions, ui);
+                } else {
+                    ui.showError("Invalid arguments for " + input.split(" ")[0]);
+                    ui.printPossibleOptions();
+                }
+
+            } catch (RLADException e) {
+                ui.showError(e.getMessage());
+                ui.printPossibleOptions();
+            } catch (Exception e) {
+                    ui.showError("An unexpected error occurred: " + e.getMessage());
+                    ui.printPossibleOptions();
             }
-            ui.showLine();
+
+            if (!isExit) {
+                ui.showLine();
+            }
         }
     }
 
