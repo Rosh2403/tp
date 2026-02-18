@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public class Transaction {
-    private final String hashId;
+    // TODO: Consider using a full UUID or a counter-based ID if collisions become too frequent in testing.
+    private String hashId;
     private final String type; // "credit" or "debit"
     private final String category;
     private final double amount;
@@ -29,8 +30,9 @@ public class Transaction {
                 hashId, type.toUpperCase(), date, amount, category, description);
     }
 
-    // TODO: implement a more robust hash handling
+    // TODO: Generate a new 4-character substring of a UUID.
+    // Ensure this remains consistent with the initial ID generation logic in the constructor.
     public void regenerateHashId() {
-
+        // this.hashId = ... (Note: hashId needs to be non-final for this to work)
     }
 }

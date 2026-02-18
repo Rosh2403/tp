@@ -10,14 +10,17 @@ public class ListCommand extends Command {
 
     @Override
     public void execute(TransactionManager transactions, Ui ui) {
-        // TODO: implement parsing of rawArgs
-        // and interaction with TransactionManager
+        // TODO: Use an ArgumentTokenizer/Parser to extract --type, --category, and --sort
+        // TODO: Filter the ArrayList from transactions.getTransactions() based on provided flags
+        // TODO: If the resulting list is empty, call ui.showResult("Your wallet is empty")
+        // TODO: Otherwise, iterate through filtered results and pass formatted strings to ui.showResult()
         ui.showResult("ListCommand logic will be implemented here.");
     }
 
     @Override
     public boolean hasValidArgs() {
-        // For now, assume true so the app doesn't crash
+        // TODO: Verify that flags like --type only contain 'credit' or 'debit'
+        // TODO: Verify that --sort is only 'date' or 'amount'
         return true;
     }
 }
