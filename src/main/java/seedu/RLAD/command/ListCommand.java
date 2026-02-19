@@ -1,46 +1,62 @@
 package seedu.RLAD.command;
 
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import seedu.RLAD.Transaction;
 import seedu.RLAD.TransactionManager;
+import seedu.RLAD.TransactionSorter;
 import seedu.RLAD.Ui;
-import seedu.RLAD.exception.RLADException;
+
+import java.util.ArrayList;
 
 public class ListCommand extends Command {
+    private String sortBy;
 
     public ListCommand(String rawArgs) {
         super(rawArgs);
+        this.sortBy = parseSortField(rawArgs);
+    }
+
+    /**
+     * Extracts the --sort value from raw arguments.
+     *
+     * @param rawArgs the raw argument string from user input
+     * @return the sort field if provided, or empty string if not
+     */
+    private String parseSortField(String rawArgs) {
+        if (rawArgs == null || rawArgs.isEmpty()) {
+            return "";
+        }
+        String[] tokens = rawArgs.split("\\s+");
+        for (int i = 0; i < tokens.length - 1; i++) {
+            if (tokens[i].equals("--sort")) {
+                return tokens[i + 1].toLowerCase();
+            }
+        }
+        return "";
     }
 
     @Override
-    public void execute(TransactionManager transactions, Ui ui) throws RLADException {
-        // 1. Generate the filter using the shared logic in FilterCommand
-        Predicate<Transaction> filter = FilterCommand.buildPredicate(this.rawArgs);
+    public void execute(TransactionManager transactions, Ui ui) {
+        ArrayList<Transaction> results = transactions.getTransactions();
 
-        // 2. Filter the list using Java Streams
-        List<Transaction> filteredResults = transactions.getTransactions().stream()
-                .filter(filter)
-                .collect(Collectors.toList());
-
-        // 3. Display logic
-        if (filteredResults.isEmpty()) {
-            ui.showResult("Your wallet is empty or no transactions match your criteria.");
+        if (results.isEmpty()) {
+            ui.showResult("Your wallet is empty! Use 'add' to record a transaction.");
             return;
         }
 
-        // TODO: Apply sorting to filteredResults here (e.g., Collections.sort)
+        if (!sortBy.isEmpty()) {
+            results = TransactionSorter.sort(results, sortBy);
+        }
 
-        for (Transaction t : filteredResults) {
-            ui.showResult(t.toString());
+        for (Transaction transaction : results) {
+            ui.showResult(transaction.toString());
         }
     }
 
     @Override
     public boolean hasValidArgs() {
-        // Check if rawArgs contains valid flags like --type, --category, etc.
-        // Return false if invalid flags are detected to prevent execution
-        return true;
+        if (sortBy.isEmpty()) {
+            return true;
+        }
+        return TransactionSorter.isValidSortField(sortBy);
     }
 }
