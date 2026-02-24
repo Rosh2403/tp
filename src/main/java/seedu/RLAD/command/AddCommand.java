@@ -1,7 +1,7 @@
 package seedu.RLAD.command;
 
 import seedu.RLAD.TransactionManager;
-import seedu.RLAD.Transaction
+import seedu.RLAD.Transaction;
 import seedu.RLAD.Ui;
 import seedu.RLAD.exception.RLADException;
 
@@ -47,7 +47,7 @@ public class AddCommand extends Command {
             }
 
             //If we hit a space and we're not inside quotes, it's the input of a non-description flag
-            if (c == '' && !insideQuotes) {
+            if (c == ' ' && !insideQuotes) {
                 //If we have a complete flag and value , store it
                 if (currentFlag != null && currentValue.length() > 0) {
                     argsMap.put(currentFlag.toString(), currentValue.toString().trim());    //Add or updates the flag-string pair into the HashMap. Updates if the key is already present
