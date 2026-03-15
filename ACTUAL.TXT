@@ -1,3 +1,8 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :run
                ╔════════════════════════════════════════════════╗
                ║       ██████╗  ██╗       █████╗  ██████╗       ║
                ║       ██╔══██╗ ██║      ██╔══██╗ ██╔══██╗      ║
@@ -19,8 +24,7 @@ Available actions:
   summarize : Get a high-level breakdown of your spending
 
 Format:
-        $action --option_0 $argument_0 ... --option_k $argument_k
+	$action --option_0 $argument_0 ... --option_k $argument_k
 Type 'help' for the full list or '$action help' for specific argument details.
 ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-> Thank you for abusing me!
- See you next time...
+> 
