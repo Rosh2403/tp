@@ -222,7 +222,9 @@ public class BudgetCommand extends Command {
 
         for (YearMonth month : sortedMonths) {
             MonthlyBudget budget = budgetManager.getBudget(month).orElse(null);
-            if (budget == null) continue;
+            if (budget == null) {
+                continue;
+            }
 
             boolean firstRow = true;
 

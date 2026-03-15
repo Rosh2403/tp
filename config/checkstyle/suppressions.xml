@@ -7,5 +7,4 @@
 <suppressions>
   <suppress checks="JavadocType" files=".*Test\.java"/>
   <suppress checks="MissingJavadocMethodCheck" files=".*Test\.java"/>
-  <suppress checks="PackageName" files="src/main/java/seedu/RLAD/.*\.java"/>
 </suppressions>
