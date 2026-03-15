@@ -6,7 +6,6 @@
 - [Commands](#commands)
   - [Adding a transaction: `add`](#adding-a-transaction-add)
   - [Listing transactions: `list`](#listing-transactions-list)
-  - [Filtering transactions: `filter`](#filtering-transactions-filter)
   - [Sorting transactions: `sort`](#sorting-transactions-sort)
   - [Deleting a transaction: `delete`](#deleting-a-transaction-delete)
   - [Modifying a transaction: `modify`](#modifying-a-transaction-modify)
@@ -87,18 +86,26 @@ add --type TYPE --amount AMOUNT --date DATE [--category CATEGORY] [--description
 
 ### Listing transactions: `list`
 
-Displays all your recorded transactions. Uses the global sort order by default, or you can override
-with `--sort` for a one-time sort.
+Displays your recorded transactions with optional filtering and sorting. Uses the global sort order
+by default, or you can override with `--sort` for a one-time sort.
 
 **Format:**
 ```
-list [--sort FIELD [DIRECTION]]
+list [--type TYPE] [--category CATEGORY] [--amount [OPERATOR] VALUE] [--date DATE] [--date-from DATE] [--date-to DATE] [--sort FIELD [DIRECTION]]
 ```
 
 | Flag | Required | Description |
 |------|----------|-------------|
+| `--type` | No | Filter by `credit` or `debit` |
+| `--category` | No | Filter by category name (case-insensitive) |
+| `--amount` | No | Filter by amount with optional operator (`-gt`, `-gte`, `-eq`, `-lt`, `-leq`). Defaults to `-eq` if no operator given |
+| `--date` | No | Filter by exact date (`YYYY-MM-DD`) |
+| `--date-from` | No | Filter for transactions on or after this date (inclusive) |
+| `--date-to` | No | Filter for transactions on or before this date (inclusive) |
 | `--sort` | No | Override sort by `amount` or `date`. Optionally add `asc` or `desc` (default: `asc`) |
 
+- If no filter flags are provided, all transactions are shown.
+- `--date-from` and `--date-to` can be combined for date ranges.
 - If no `--sort` flag is provided, the global sort order is used (set via the `sort` command).
 - If no global sort is set either, transactions are shown in insertion order.
 - The `--sort` flag only affects this command -- it does not change the global sort setting.
@@ -110,72 +117,36 @@ List all transactions:
 > list
 ```
 
-List with a one-time sort override (does not change global sort):
+List only debit transactions:
 ```
-> list --sort amount desc
+> list --type debit
+```
+
+List by category:
+```
+> list --category food
+```
+
+List transactions in a date range, sorted by amount descending:
+```
+> list --date-from 2024-01-01 --date-to 2024-06-30 --sort amount desc
 ```
 
 **Sample output:**
 ```
-[e9d4] CREDIT | 2026-01-01 | $3000.00 | salary | Monthly salary
-[f1c3] DEBIT | 2026-02-15 | $25.00 | food | Lunch
-[a7b2] DEBIT | 2026-02-10 | $5.50 | transport | Bus fare
-```
-
-### Filtering transactions: `filter`
-
-Searches transactions by type, category, amount, or date. Multiple flags are combined to narrow results.
-
-**Format:**
-```
-filter --FLAG VALUE [--FLAG VALUE ...] [--sort FIELD [DIRECTION]]
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--type` | No | Filter by `credit` or `debit` |
-| `--category` | No | Filter by category name (case-insensitive) |
-| `--amount` | No | Filter by amount with optional operator (`-gt`, `-gte`, `-eq`, `-lt`, `-leq`). Defaults to `-eq` if no operator given |
-| `--date` | No | Filter by exact date (`YYYY-MM-DD`) |
-| `--date-from` | No | Filter for transactions on or after this date (inclusive) |
-| `--date-to` | No | Filter for transactions on or before this date (inclusive) |
-| `--sort` | No | Override sort for this command only. Same as `list --sort` |
-
-- At least one filter flag must be provided.
-- Multiple `--amount` flags can be used for range queries (e.g. `--amount -gte 50 --amount -lt 150`).
-- `--date-from` and `--date-to` can be combined for date ranges.
-- Uses the global sort order by default. Use `--sort` to override for this command only.
-
-**Examples:**
-
-Filter by type:
-```
-> filter --type debit
-```
-
-Filter by category:
-```
-> filter --category food
-```
-
-Filter by amount range:
-```
-> filter --amount -gte 50 --amount -lt 150
-```
-
-Filter by date range:
-```
-> filter --date-from 2024-01-01 --date-to 2024-06-30
-```
-
-Combine multiple filters with a sort override:
-```
-> filter --type debit --amount -gt 10 --sort amount desc
+---------------------------------------------------------------------------
+  ID     TYPE     DATE             AMOUNT  CATEGORY      DESCRIPTION
+---------------------------------------------------------------------------
+  e9d4   CREDIT   2026-01-01     $3000.00  salary        Monthly salary
+  f1c3   DEBIT    2026-02-15       $25.00  food          Lunch
+  a7b2   DEBIT    2026-02-10        $5.50  transport     Bus fare
+---------------------------------------------------------------------------
+  Total: 3 transaction(s) shown.
 ```
 
 ### Sorting transactions: `sort`
 
-Sets or views the global sort order. This affects how `list` and `filter` display transactions by default.
+Sets or views the global sort order. This affects how `list` displays transactions by default.
 
 **Format:**
 ```
@@ -190,8 +161,8 @@ sort reset
 
 - `sort` with no arguments shows the current sort setting.
 - `sort reset` clears the global sort, returning to insertion order.
-- The global sort persists for the session and is applied to both `list` and `filter`.
-- Use `--sort` on `list` or `filter` to override the global sort for a single command.
+- The global sort persists for the session and is applied to `list`.
+- Use `--sort` on `list` to override the global sort for a single command.
 
 **Examples:**
 
@@ -323,9 +294,8 @@ Available actions:
   add       : Record a new transaction
   modify    : Edit an existing entry
   delete    : Remove an entry
-  filter    : Search transactions by type, category, amount, or date
   sort      : Set or view the global sort order (amount/date, asc/desc)
-  list      : View your transaction history
+  list      : View your transaction history (with filtering and sorting)
   summarize : Get a high-level breakdown of your spending
 
 Format:
@@ -350,7 +320,7 @@ at the start, e.g. `[a7b2]`.
 **Q**: Can I sort transactions in descending order?
 
 **A**: Yes. Use `sort amount desc` or `sort date desc` to set descending order globally, or use
-`list --sort amount desc` / `filter --sort date desc` for a one-time override.
+`list --sort amount desc` for a one-time override.
 
 **Q**: What happens if I enter an invalid command?
 
@@ -374,8 +344,7 @@ at the start, e.g. `[a7b2]`.
 | Command | Format | Status |
 |---------|--------|--------|
 | **add** | `add --type TYPE --amount AMOUNT --date DATE [--category CAT] [--description DESC]` | Working |
-| **list** | `list [--sort FIELD [DIRECTION]]` | Working |
-| **filter** | `filter --FLAG VALUE [--FLAG VALUE ...] [--sort FIELD [DIRECTION]]` | Working |
+| **list** | `list [--type TYPE] [--category CAT] [--sort FIELD [DIRECTION]]` | Working |
 | **sort** | `sort [FIELD [DIRECTION]]` / `sort reset` | Working |
 | **delete** | `delete <id>` | Planned |
 | **modify** | `modify <id> --amount <new amount>` | Planned |

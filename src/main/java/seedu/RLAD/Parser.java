@@ -3,7 +3,6 @@ package seedu.RLAD;
 import seedu.RLAD.command.AddCommand;
 import seedu.RLAD.command.Command;
 import seedu.RLAD.command.DeleteCommand;
-import seedu.RLAD.command.FilterCommand;
 import seedu.RLAD.command.HelpCommand;
 import seedu.RLAD.command.ListCommand;
 import seedu.RLAD.command.ModifyCommand;
@@ -44,11 +43,11 @@ public class Parser {
     }
 
     private static boolean isValidAction(String action) {
-        return action.matches("add|delete|modify|list|filter|sort|summarize|help|exit");
+        return action.matches("add|delete|modify|list|sort|summarize|help|exit");
     }
 
     private static boolean requiresArguments(String action) {
-        return action.matches("add|delete|modify|filter");
+        return action.matches("add|delete|modify");
     }
 
     public static Command parse(String input) throws RLADException {
@@ -62,8 +61,6 @@ public class Parser {
             return new AddCommand(arguments);
         case "delete":
             return new DeleteCommand(arguments);
-        case "filter":
-            return new FilterCommand(arguments);
         case "list":
             return new ListCommand(arguments);
         case "sort":

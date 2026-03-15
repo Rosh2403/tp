@@ -20,8 +20,8 @@ src/main/java/seedu/RLAD/
     ├── AddCommand.java       # Add new transaction
     ├── DeleteCommand.java    # Delete transaction by ID
     ├── ModifyCommand.java    # Modify existing transaction
-    ├── ListCommand.java      # List transactions (with optional sorting)
-    ├── FilterCommand.java    # Filter transactions by type/category/amount/date
+    ├── ListCommand.java      # List transactions (with filtering and sorting)
+    ├── FilterCommand.java    # Helper: filtering logic (Predicate)
     ├── SortCommand.java      # Set global sort order
     ├── SummarizeCommand.java # Summarize transactions
     └── HelpCommand.java      # Show help
@@ -55,7 +55,7 @@ The project follows the **MVC pattern** with the **Command Design Pattern**:
 │  │              │ │              │ │              │           │
 │  │ execute()    │ │ execute()    │ │ execute()    │           │
 │  │ → addTrans() │ │ → delete()   │ │ → getTrans() │           │
-│  │              │ │ → find()     │ │ + sort       │           │
+│  │              │ │ → find()     │ │ + filter/sort│           │
 │  └──────────────┘ └──────────────┘ └──────────────┘           │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -86,10 +86,21 @@ The project follows the **MVC pattern** with the **Command Design Pattern**:
 | **AddCommand** | `addTransaction(t)` |
 | **DeleteCommand** | `findTransaction(id)`, `deleteTransaction(id)` |
 | **ModifyCommand** | `findTransaction(id)`, `updateTransaction(id, t)` |
-| **ListCommand** | `getTransactions()` + `TransactionSorter.sort()` |
-| **FilterCommand** | `getTransactions()` + `buildPredicate()` + `TransactionSorter.sort()` |
+| **ListCommand** | `getTransactions()` + `FilterCommand.buildPredicate()` + `TransactionSorter.sort()` |
 | **SortCommand** | Sets global sort field/direction on `TransactionManager` |
-| **SummarizeCommand** | `getTransactions()` |
+| **SummarizeCommand** | `getTransactions()` + `FilterCommand.buildPredicate()` |
+
+## Filtering (FilterCommand)
+
+**Important:** `FilterCommand` is NOT a user-facing command. It's a helper class that provides filtering logic.
+
+```java
+// ListCommand uses FilterCommand
+Predicate<Transaction> filter = FilterCommand.buildPredicate(rawArgs);
+List<Transaction> filtered = transactions.getTransactions().stream()
+    .filter(filter)
+    .collect(Collectors.toList());
+```
 
 ## Setup
 
@@ -111,9 +122,11 @@ The project follows the **MVC pattern** with the **Command Design Pattern**:
 ```
 add --type <credit/debit> --amount <amount> --category <category>
 list
-list --sort <amount|date>
-filter --type <credit/debit> --category <category> --amount <operator> <value>
+list --type <credit/debit>
+list --category <category>
+list --sort <amount|date> [asc|desc]
 sort <amount|date> [asc|desc]
+sort reset
 delete <id>
 modify <id> --amount <new amount>
 summarize
