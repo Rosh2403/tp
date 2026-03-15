@@ -5,7 +5,45 @@ import seedu.RLAD.budget.BudgetManager;
 import java.time.YearMonth;
 import java.util.ArrayList;
 
+/**
+ * TransactionManager - The Model layer of the application.
+ * Handles storage and retrieval of Transaction data.
+ *
+ * === How Commands Interact with TransactionManager ===
+ *
+ * PARSER (Parser.java)
+ *   └─> Creates Command objects (does NOT interact with TransactionManager)
+ *
+ * COMMANDS
+ *   ├─ AddCommand
+ *   │     └─> addTransaction(t) : Adds new transaction to storage
+ *   │
+ *   ├─ DeleteCommand
+ *   │     ├─> findTransaction(id) : Locates transaction by ID
+ *   │     └─> deleteTransaction(id) : Removes transaction from storage
+ *   │
+ *   ├─ ListCommand
+ *   │     └─> getTransactions() : Retrieves all transactions, then applies
+ *   │         FilterCommand.buildPredicate() for filtering
+ *   │
+ *   ├─ ModifyCommand
+ *   │     ├─> findTransaction(id) : Locates transaction to modify
+ *   │     └─> updateTransaction(id, updated) : Replaces old transaction
+ *   │
+ *   └─ SummarizeCommand
+ *         └─> getTransactions() : Retrieves all, then applies
+ *             FilterCommand.buildPredicate() for filtered summaries
+ *
+ * NOTE: FilterCommand is NOT a command the user types. It is a helper class
+ * that provides filtering logic used by ListCommand and SummarizeCommand.
+ */
+
 public class TransactionManager {
+    /**
+     * Creates a new transaction and adds it to storage.
+     * Used by: AddCommand
+     * @param t the Transaction to add
+     */
     private final ArrayList<Transaction> transactions = new ArrayList<>();
     private BudgetManager budgetManager; // Add reference to BudgetManager
 
@@ -35,12 +73,21 @@ public class TransactionManager {
         return false;
     }
 
+    /**
+     * Retrieves all transactions from storage.
+     * Used by: ListCommand, SummarizeCommand (with FilterCommand applied afterwards)
+     * @return ArrayList of all transactions
+     */
     public ArrayList<Transaction> getTransactions() {
         return transactions;
     }
 
-    // Add the missing methods that the compiler is looking for:
-
+    /**
+     * Finds a transaction by its ID.
+     * Used by: DeleteCommand, ModifyCommand
+     * @param id the transaction ID to search for
+     * @return the Transaction if found, null otherwise
+     */
     public Transaction findTransaction(String id) {
         for (Transaction t : transactions) {
             if (t.getHashId().equals(id)) {
@@ -50,6 +97,12 @@ public class TransactionManager {
         return null;
     }
 
+    /**
+     * Deletes a transaction by its ID.
+     * Used by: DeleteCommand
+     * @param id the transaction ID to delete
+     * @return true if deletion was successful, false if ID not found
+     */
     public boolean deleteTransaction(String id) {
         Transaction toDelete = findTransaction(id);
         if (toDelete != null) {
@@ -60,6 +113,13 @@ public class TransactionManager {
         return false;
     }
 
+    /**
+     * Updates an existing transaction with new data.
+     * Used by: ModifyCommand
+     * @param id the transaction ID to update
+     * @param updated the new transaction data
+     * @return true if update was successful, false if ID not found
+     */
     public boolean updateTransaction(String id, Transaction updated) {
         for (int i = 0; i < transactions.size(); i++) {
             if (transactions.get(i).getHashId().equals(id)) {
