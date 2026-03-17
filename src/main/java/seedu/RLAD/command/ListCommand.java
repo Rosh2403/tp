@@ -9,6 +9,7 @@ import seedu.RLAD.Transaction;
 import seedu.RLAD.TransactionManager;
 import seedu.RLAD.Ui;
 import seedu.RLAD.exception.RLADException;
+import java.util.logging.Logger;
 
 /**
  * ListCommand displays transactions, with optional filtering and sorting.
@@ -32,6 +33,7 @@ import seedu.RLAD.exception.RLADException;
 
 public class ListCommand extends Command {
 
+    private static final Logger logger = Logger.getLogger(ListCommand.class.getName());
     private static final String DIVIDER = "-".repeat(75);
 
     public ListCommand(String rawArgs) {
@@ -40,6 +42,7 @@ public class ListCommand extends Command {
 
     @Override
     public void execute(TransactionManager transactions, Ui ui) throws RLADException {
+        logger.info("Executing ListCommand with args: " + rawArgs);
         // 1. Parse flags from rawArgs
         Map<String, String> flags = FilterCommand.parseFlags(this.rawArgs);
 

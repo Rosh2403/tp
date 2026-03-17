@@ -9,6 +9,8 @@ import seedu.RLAD.Transaction;
 import seedu.RLAD.TransactionManager;
 import seedu.RLAD.Ui;
 import seedu.RLAD.exception.RLADException;
+import java.util.logging.Logger;
+
 /**
  * FilterCommand handles filtering transactions based on various criteria.
  * Provides shared filtering logic that can be used by other commands
@@ -26,8 +28,8 @@ import seedu.RLAD.exception.RLADException;
 
 public class FilterCommand extends Command {
 
+    private static final Logger logger = Logger.getLogger(FilterCommand.class.getName());
     public FilterCommand(String rawArgs) {
-
         super(rawArgs);
     }
 
@@ -117,6 +119,7 @@ public class FilterCommand extends Command {
 
     public static Predicate<Transaction> buildPredicate(String rawArgs) throws RLADException {
         assert rawArgs != null : "rawArgs should not be null";
+        logger.info("Building predicate with args: " + rawArgs);
         Predicate<Transaction> predicate = t -> true; // start with "match all"
         Map<String, String> flags = parseFlags(rawArgs);
 
