@@ -3,6 +3,7 @@ package seedu.RLAD.budget;
 import seedu.RLAD.Transaction;
 import seedu.RLAD.TransactionManager;
 import seedu.RLAD.exception.RLADException;
+import seedu.RLAD.Ui;
 
 import java.time.YearMonth;
 import java.util.HashMap;
@@ -23,16 +24,15 @@ public class BudgetManager {
     private final Map<String, Set<Integer>> notifiedThresholds = new HashMap<>();
     private final Map<YearMonth, MonthlyBudget> budgets;
     private final TransactionManager transactionManager;
-
     private Ui ui;
-
-    public void setUi(Ui ui) {
-        this.ui = ui;
-    }
 
     public BudgetManager(TransactionManager transactionManager) {
         this.budgets = new HashMap<>();
         this.transactionManager = transactionManager;
+    }
+
+    public void setUi(Ui ui) {
+        this.ui = ui;
     }
 
     /**
@@ -143,7 +143,7 @@ public class BudgetManager {
             updateCategorySpending(month, transaction);
 
             //Check thresholds for this month
-            checkBudgetThresholds(month, null);
+            checkBudgetThresholds(month);
         }
     }
 
@@ -173,9 +173,30 @@ public class BudgetManager {
         } else if (transaction.getType().equalsIgnoreCase("debit")) {
             // Re-check thresholds after deletion (spending decreased)
             // This might need to reset notifications if spending falls below threshold
-            checkBudgetThresholds(month, null);
+            checkBudgetThresholds(month);
         }
         // For debits, the spent amount will automatically update on next view
+    }
+
+    public void onTransactionUpdated(Transaction oldTransaction, Transaction newTransaction) {
+        YearMonth oldMonth = YearMonth.from(oldTransaction.getDate());
+        YearMonth newMonth = YearMonth.from(newTransaction.getDate());
+
+        // If month changed, update both months
+        if (!oldMonth.equals(newMonth)) {
+            updateTotalIncome(oldMonth);
+            updateTotalIncome(newMonth);
+        } else if (oldTransaction.getType().equalsIgnoreCase("credit") !=
+                newTransaction.getType().equalsIgnoreCase("credit")) {
+            // Type changed between credit/debit
+            updateTotalIncome(oldMonth);
+        }
+
+        // Check thresholds for the affected month(s)
+        checkBudgetThresholds(oldMonth);
+        if (!oldMonth.equals(newMonth)) {
+            checkBudgetThresholds(newMonth);
+        }
     }
 
     /**
@@ -325,17 +346,17 @@ public class BudgetManager {
 
             // Check each threshold
             if (percentage >= 80 && !notified.contains(80)) {
-                sendNotification(category, month, percentage, spent, allocated, ui);
+                sendNotification(category, month, percentage, spent, allocated);
                 notified.add(80);
             }
 
             if (percentage >= 90 && !notified.contains(90)) {
-                sendNotification(category, month, percentage, spent, allocated, ui);
+                sendNotification(category, month, percentage, spent, allocated);
                 notified.add(90);
             }
 
             if (percentage >= 100 && !notified.contains(100)) {
-                sendNotification(category, month, percentage, spent, allocated, ui);
+                sendNotification(category, month, percentage, spent, allocated);
                 notified.add(100);
             }
 
@@ -355,7 +376,7 @@ public class BudgetManager {
      * @param ui The UI instance
      */
     private void sendNotification(BudgetCategory category, YearMonth month,
-                                  double percentage, double spent, double budget, Ui ui) {
+                                  double percentage, double spent, double budget) {
         // Format month string (e.g., "March 2026")
         String monthStr = month.getMonth().toString() + " " + month.getYear();
         int percentInt = (int) Math.round(percentage);

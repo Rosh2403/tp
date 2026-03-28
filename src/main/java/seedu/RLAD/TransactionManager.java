@@ -3,6 +3,7 @@ package seedu.RLAD;
 import seedu.RLAD.budget.BudgetManager;
 
 import java.util.ArrayList;
+import java.time.YearMonth;
 
 /**
  * TransactionManager - The Model layer of the application.
@@ -65,6 +66,8 @@ public class TransactionManager {
         // Notify budget manager about the new transaction
         if (budgetManager != null) {
             budgetManager.onTransactionAdded(t);
+            //Check threshold after adding
+            budgetManager.checkBudgetThresholds(YearMonth.from(t.getDate()));
         }
     }
 
@@ -110,7 +113,13 @@ public class TransactionManager {
         Transaction toDelete = findTransaction(id);
         if (toDelete != null) {
             transactions.remove(toDelete);
-            // Notify budget manager about deletion if needed
+            // Notify budget manager about the deleted transaction
+            if (budgetManager != null) {
+                budgetManager.onTransactionDeleted(toDelete);
+                // Re-check thresholds after deletion
+                budgetManager.checkBudgetThresholds(YearMonth.from(toDelete.getDate()));
+            }
+
             return true;
         }
         return false;
@@ -126,8 +135,16 @@ public class TransactionManager {
     public boolean updateTransaction(String id, Transaction updated) {
         for (int i = 0; i < transactions.size(); i++) {
             if (transactions.get(i).getHashId().equals(id)) {
+                Transaction old = transactions.get(i);
                 transactions.set(i, updated);
-                // Notify budget manager about update if needed
+
+                // Notify budget manager about the updated transaction
+                if (budgetManager != null) {
+                    budgetManager.onTransactionUpdated(old, updated);
+                    // Check thresholds for the month of the updated transaction
+                    budgetManager.checkBudgetThresholds(YearMonth.from(updated.getDate()));
+                }
+
                 return true;
             }
         }
