@@ -16,6 +16,7 @@ public class Ui {
     // User input
     public String readCommand() {
         System.out.print("> "); // A simple prompt character
+        System.out.flush();
         return userScanner.nextLine();
     }
 

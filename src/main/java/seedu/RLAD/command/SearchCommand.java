@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * SearchCommand finds transactions by keyword across all fields.
+ * Searches description, category, hash ID, and amount.
+ * Also available as "find" (alias registered in Parser).
+ */
 public class SearchCommand extends Command {
-
-    private static final String DIVIDER = "-".repeat(75);
 
     public SearchCommand(String rawArgs) {
         super(rawArgs);
@@ -20,7 +23,8 @@ public class SearchCommand extends Command {
     private String parseKeyword() {
         Map<String, String> flags = FilterCommand.parseFlags(rawArgs);
         String keyword = flags.get("keyword");
-        return (keyword != null && !keyword.isEmpty()) ? keyword : null;
+        return (keyword != null && !keyword.isEmpty())
+                ? keyword : null;
     }
 
     private boolean matchesKeyword(Transaction t, String keyword) {
@@ -28,7 +32,8 @@ public class SearchCommand extends Command {
         if (t.getDescription().toLowerCase().contains(lower)) {
             return true;
         }
-        if (t.getCategory() != null && t.getCategory().toLowerCase().contains(lower)) {
+        if (t.getCategory() != null
+                && t.getCategory().toLowerCase().contains(lower)) {
             return true;
         }
         if (t.getHashId().toLowerCase().contains(lower)) {
@@ -41,40 +46,38 @@ public class SearchCommand extends Command {
     }
 
     @Override
-    public void execute(TransactionManager transactions, Ui ui) throws RLADException {
+    public void execute(TransactionManager transactions, Ui ui)
+            throws RLADException {
         if (!hasValidArgs()) {
-            throw new RLADException("Missing required field: --keyword");
+            throw new RLADException(
+                    "Missing required field: --keyword");
         }
 
         String keyword = parseKeyword();
-        List<Transaction> results = transactions.getTransactions().stream()
-                .filter(t -> matchesKeyword(t, keyword))
-                .collect(Collectors.toList());
+        List<Transaction> results =
+                transactions.getTransactions().stream()
+                        .filter(t -> matchesKeyword(t, keyword))
+                        .collect(Collectors.toList());
 
         if (results.isEmpty()) {
-            ui.showResult("No transactions found matching: \"" + keyword + "\"");
+            ui.showResult("No transactions found matching: \""
+                    + keyword + "\"");
             return;
         }
 
-        ui.showResult(DIVIDER);
-        ui.showResult(String.format("  %-6s %-8s %-12s %10s  %-12s  %s",
-                "ID", "TYPE", "DATE", "AMOUNT", "CATEGORY", "DESCRIPTION"));
-        ui.showResult(DIVIDER);
+        TableFormatter.printHeader(ui);
         for (Transaction t : results) {
-            ui.showResult(String.format("  %-6s %-8s %-12s %10s  %-12s  %s",
-                    t.getHashId(),
-                    t.getType().toUpperCase(),
-                    t.getDate().toString(),
-                    String.format("$%.2f", t.getAmount()),
-                    t.getCategory().isEmpty() ? "(none)" : t.getCategory(),
-                    t.getDescription().isEmpty() ? "(none)" : t.getDescription()));
+            TableFormatter.printRow(ui, t);
         }
-        ui.showResult(DIVIDER);
-        ui.showResult("  " + results.size() + " transaction(s) found for: \"" + keyword + "\"");
+        TableFormatter.printFooter(ui,
+                results.size() + " transaction(s) found for: \""
+                        + keyword + "\"");
     }
 
     @Override
     public boolean hasValidArgs() {
-        return rawArgs != null && rawArgs.contains("--keyword") && parseKeyword() != null;
+        return rawArgs != null
+                && rawArgs.contains("--keyword")
+                && parseKeyword() != null;
     }
 }

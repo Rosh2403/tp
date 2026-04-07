@@ -8,8 +8,6 @@ import seedu.RLAD.exception.RLADException;
 import java.util.HashMap;
 import java.util.Map;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class AddCommand extends Command {
     public AddCommand(String rawArgs) {
@@ -135,12 +133,7 @@ public class AddCommand extends Command {
      * @throws RLADException if the amount format is invalid
      */
     private double convertAmount(String amountStr) throws RLADException {
-        try {
-            return Double.parseDouble(amountStr);   //Code that may cause an exception
-        } catch (NumberFormatException e) {
-            //Code to execute if the exception is true
-            throw new RLADException("Invalid amount format. Please enter a valid number (e.g., 15.50)");
-        }
+        return CommandUtils.parseAmount(amountStr);
     }
 
     /**
@@ -152,12 +145,7 @@ public class AddCommand extends Command {
      * @throws RLADException if the date format is invalid
      */
     private LocalDate convertDate(String dateStr) throws RLADException {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(dateStr, formatter);
-        } catch (DateTimeParseException e) {
-            throw new RLADException("Invalid date format. Please use yyyy-MM-dd (e.g., 2026-02-18)");
-        }
+        return CommandUtils.parseDate(dateStr);
     }
 
     @Override
