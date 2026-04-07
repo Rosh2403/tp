@@ -1182,7 +1182,7 @@ The description field is last, so pipes within descriptions are preserved (the p
 
 `HelpCommand` provides built-in usage instructions. When invoked with no arguments (`help`), it calls `Ui.printPossibleOptions()` to list all available commands. When invoked with a command name (e.g. `help add`), it calls the corresponding manual method in `Ui` (e.g. `Ui.printAddManual()`).
 
-Supported commands: `add`, `modify`, `delete`, `list`, `filter`, `search`, `sort`, `summarize`, `budget`, `export`, `import`, `clear`, `help`. Unrecognised command names produce an error message.
+Supported commands: `add`, `modify`, `delete`, `list`, `filter`, `search`, `sort`, `summarize`, `budget`, `export`, `import`, `clear`, `help`, `exit`. Unrecognised command names produce an error message.
 
 ```mermaid
 sequenceDiagram
