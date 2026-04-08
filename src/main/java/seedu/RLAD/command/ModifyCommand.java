@@ -12,8 +12,10 @@ import java.util.Map;
 
 public class ModifyCommand extends Command {
 
-    public ModifyCommand(String action, String rawArgs) {
-        super(action, rawArgs);
+    private static final double MAX_AMOUNT = 10_000_000.00;
+
+    public ModifyCommand(String rawArgs) {
+        super(rawArgs);
     }
 
     @Override
@@ -84,6 +86,9 @@ public class ModifyCommand extends Command {
             }
             if (value <= 0) {
                 throw new RLADException("Amount must be > 0");
+            }
+            if (value > MAX_AMOUNT) {
+                throw new RLADException(String.format("Amount cannot exceed $%,.2f", MAX_AMOUNT));
             }
             return value;
         } catch (NumberFormatException e) {

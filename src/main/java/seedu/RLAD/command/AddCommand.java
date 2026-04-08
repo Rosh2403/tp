@@ -185,9 +185,7 @@ public class AddCommand extends Command {
                     inQuotes = false;
                     quotedDesc.setLength(0);
                 }
-            }
-            // Continue building quoted description
-            else if (inQuotes) {
+            } else if (inQuotes) {
                 quotedDesc.append(" ").append(part);
                 if (part.endsWith("\"")) {
                     description = quotedDesc.toString();
@@ -195,9 +193,7 @@ public class AddCommand extends Command {
                     inQuotes = false;
                     quotedDesc.setLength(0);
                 }
-            }
-            // Normal word (not in quotes)
-            else {
+            } else {
                 remainingParts.add(part);
             }
         }
