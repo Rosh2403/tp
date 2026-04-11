@@ -676,7 +676,6 @@ Your data is restored automatically the next time you launch RLAD from the same 
 
 ### Known Limitations
 
-- **Double dash in descriptions:** The string `--` inside a description confuses the parser. Use a single dash `-` instead.
 - **HashID lookup:** If you lose a HashID, use `list` to find it in the leftmost column.
 - **Duplicate monthly budgets:** Each category supports at most one budget per month. Use `budget edit` to update an existing entry.
 
