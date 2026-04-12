@@ -33,6 +33,14 @@ public class ExportCommand extends Command {
     @Override
     public void execute(TransactionManager transactions, Ui ui) throws RLADException {
         String filename = rawArgs == null ? "" : rawArgs.trim();
+
+        // Support legacy --file flag for backward compatibility
+        if (filename.startsWith("--file ")) {
+            filename = filename.substring("--file ".length()).trim();
+        } else if (filename.equals("--file")) {
+            filename = "";
+        }
+
         if (filename.isEmpty()) {
             filename = "transactions_"
                     + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".csv";

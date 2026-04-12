@@ -28,6 +28,13 @@ public class ImportCommand extends Command {
     public void execute(TransactionManager transactions, Ui ui) throws RLADException {
         String args = rawArgs == null ? "" : rawArgs.trim();
 
+        // Support legacy --file flag for backward compatibility
+        if (args.startsWith("--file ")) {
+            args = args.substring("--file ".length()).trim();
+        } else if (args.equals("--file")) {
+            args = "";
+        }
+
         boolean mergeMode = false;
         if (args.toLowerCase().endsWith(" merge")) {
             mergeMode = true;
