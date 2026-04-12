@@ -295,6 +295,10 @@ public class FilterCommand extends Command {
 
             switch (key) {
             case "type":
+                if (!value.equals("credit") && !value.equals("debit")) {
+                    throw new RLADException("Invalid type: '" + value
+                            + "'. Use 'credit' or 'debit'.");
+                }
                 result = result.stream()
                         .filter(t -> t.getType().equalsIgnoreCase(value))
                         .collect(Collectors.toList());
