@@ -119,4 +119,12 @@ class ModifyCommandTest {
         Transaction updated = manager.findTransaction(existingId);
         assertEquals(existingId, updated.getHashId());
     }
+
+    @Test
+    void execute_duplicateField_throwsException() {
+        RLADException ex = assertThrows(RLADException.class, () ->
+                new ModifyCommand(existingId + " amount=10.00 amount=900.00").execute(manager, ui));
+        assertTrue(ex.getMessage().contains("Duplicate field"));
+        assertTrue(ex.getMessage().contains("amount"));
+    }
 }
