@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ModifyCommand extends Command {
 
@@ -47,7 +48,12 @@ public class ModifyCommand extends Command {
             for (String pair : pairs) {
                 String[] kv = pair.split("=", 2);
                 if (kv.length == 2) {
-                    updates.put(kv[0].toLowerCase(), kv[1]);
+                    String field = kv[0].toLowerCase();
+                    if (updates.containsKey(field)) {
+                        throw new RLADException("Duplicate field: '" + field
+                                + "' was specified more than once.");
+                    }
+                    updates.put(field, kv[1]);
                 } else {
                     throw new RLADException("Invalid format. Use field=value (e.g., amount=25.00)");
                 }
@@ -57,6 +63,15 @@ public class ModifyCommand extends Command {
         // After parsing updates, check if there are any
         if (updates.isEmpty()) {
             throw new RLADException("No fields to update. Usage: modify <hashID> field=value [field=value ...]");
+        }
+
+        // Reject unknown field names
+        Set<String> validFields = Set.of("type", "amount", "date", "category", "description");
+        for (String key : updates.keySet()) {
+            if (!validFields.contains(key)) {
+                throw new RLADException("Unknown field: '" + key + "'. "
+                        + "Valid fields: type, amount, date, category, description");
+            }
         }
 
         // Apply updates
@@ -95,7 +110,11 @@ public class ModifyCommand extends Command {
             if (value > MAX_AMOUNT) {
                 throw new RLADException(String.format("Amount cannot exceed $%,.2f", MAX_AMOUNT));
             }
-            return value;
+            double rounded = Math.round(value * 100.0) / 100.0;
+            if (rounded <= 0) {
+                throw new RLADException("Amount rounds to $0.00. Minimum is $0.01.");
+            }
+            return rounded;
         } catch (NumberFormatException e) {
             throw new RLADException("Invalid amount");
         }
