@@ -161,6 +161,21 @@ public class FilterCommand extends Command {
 
     /**
      * Builds a category predicate with partial matching, multiple categories, and code support.
+     *
+     * <p>This method supports several ways to filter by category:
+     * <ul>
+     *   <li>Category name (partial match, case-insensitive)</li>
+     *   <li>Category code (1-12, maps to predefined budget categories)</li>
+     *   <li>Multiple categories (comma-separated, e.g., "food,transport")</li>
+     *   <li>Special value "(none)" to match transactions without a category</li>
+     * </ul>
+     *
+     * <p>Example: {@code --category health} will match "health", "Health & Insurance",
+     * and any category containing "health" as a substring.
+     *
+     * @param categoryValue The category filter value
+     * @return A predicate that tests transaction category matching
+     * @throws RLADException If category code is invalid
      */
     private static Predicate<Transaction> buildCategoryPredicate(String categoryValue)
             throws RLADException {
@@ -173,8 +188,12 @@ public class FilterCommand extends Command {
         // Check if it's a category code (integer 1-12)
         try {
             int code = Integer.parseInt(categoryValue.trim());
-            String categoryName = BudgetCategory.fromCode(code).getDisplayName();
-            return t -> t.getCategory() != null && t.getCategory().equalsIgnoreCase(categoryName);
+            BudgetCategory category = BudgetCategory.fromCode(code);
+            String categoryName = category.getDisplayName();
+            // Also check keyword mappings for partial matches
+            return t -> t.getCategory() != null &&
+                    (t.getCategory().equalsIgnoreCase(categoryName) ||
+                            matchesCategoryKeyword(t.getCategory(), category));
         } catch (NumberFormatException ignored) {
             // Not a number, continue to other checks
         } catch (RLADException e) {
@@ -204,6 +223,52 @@ public class FilterCommand extends Command {
         }
 
         return t -> t.getCategory() != null && t.getCategory().toLowerCase().contains(lowerCategory);
+    }
+
+    /**
+     * Helper method to check if a transaction category matches a budget category via keywords.
+     *
+     * <p>This allows users to use simple keywords like "health" to match
+     * the "Health & Insurance" budget category.
+     *
+     * @param transactionCategory The transaction's category string
+     * @param budgetCategory The budget category to match against
+     * @return true if the transaction category matches via keyword mapping
+     */
+    private static boolean matchesCategoryKeyword(String transactionCategory, BudgetCategory budgetCategory) {
+        if (transactionCategory == null) {
+            return false;
+        }
+
+        // Keyword mapping for budget categories
+        switch (budgetCategory) {
+        case HEALTH_INSURANCE:
+            return transactionCategory.equalsIgnoreCase("health") ||
+                    transactionCategory.equalsIgnoreCase("insurance") ||
+                    transactionCategory.equalsIgnoreCase("medical");
+        case DEBT_OBLIGATION:
+            return transactionCategory.equalsIgnoreCase("debt") ||
+                    transactionCategory.equalsIgnoreCase("loan");
+        case CHILD_CARE:
+            return transactionCategory.equalsIgnoreCase("childcare") ||
+                    transactionCategory.equalsIgnoreCase("child");
+        case SHOPPING:
+            return transactionCategory.equalsIgnoreCase("shopping") ||
+                    transactionCategory.equalsIgnoreCase("personal");
+        case GIFTS:
+            return transactionCategory.equalsIgnoreCase("gifts") ||
+                    transactionCategory.equalsIgnoreCase("donations");
+        case INVESTMENTS:
+            return transactionCategory.equalsIgnoreCase("investments") ||
+                    transactionCategory.equalsIgnoreCase("investing");
+        case EMERGENCY_FUND:
+            return transactionCategory.equalsIgnoreCase("emergency");
+        case SAVINGS:
+            return transactionCategory.equalsIgnoreCase("savings") ||
+                    transactionCategory.equalsIgnoreCase("save");
+        default:
+            return false;
+        }
     }
 
     /**
@@ -284,6 +349,29 @@ public class FilterCommand extends Command {
         String[] parts = filterStr.split("\\s+");
         List<Transaction> result = new ArrayList<>(transactions);
 
+        // Pre-scan for min/max to validate range before filtering
+        boolean hasMin = false;
+        boolean hasMax = false;
+        double minVal = 0;
+        double maxVal = 0;
+
+        for (String part : parts) {
+            String token = part.toLowerCase();
+            if (token.startsWith("min:")) {
+                minVal = parseColonAmount(token.substring(4));
+                hasMin = true;
+            } else if (token.startsWith("max:")) {
+                maxVal = parseColonAmount(token.substring(4));
+                hasMax = true;
+            }
+        }
+
+        if (hasMin && hasMax && minVal > maxVal) {
+            throw new RLADException(String.format(
+                    "min:%.2f is greater than max:%.2f. "
+                            + "This range will never match any transactions.", minVal, maxVal));
+        }
+
         for (String part : parts) {
             String token = part.toLowerCase();
             if (!token.contains(":")) {
@@ -292,6 +380,10 @@ public class FilterCommand extends Command {
             String[] kv = token.split(":", 2);
             String key = kv[0];
             String value = kv[1];
+
+            if (key.isEmpty()) {
+                continue;
+            }
 
             switch (key) {
             case "type":
@@ -345,6 +437,7 @@ public class FilterCommand extends Command {
                         + "'. Available: type, cat, from, to, min, max");
             }
         }
+
         return result;
     }
 
