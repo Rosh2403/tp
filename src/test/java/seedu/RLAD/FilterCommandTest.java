@@ -411,6 +411,8 @@ class FilterCommandTest {
         for (Transaction t : results) {
             assertEquals("credit", t.getType());
         }
+    }
+        
     public void applyColonFilters_minGreaterThanMax_throwsException() {
         ArrayList<Transaction> transactions = createSampleTransactions();
         assertThrows(RLADException.class,
