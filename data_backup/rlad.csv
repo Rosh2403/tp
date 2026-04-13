@@ -1,0 +1,10 @@
+HashID,Type,Category,Amount,Date,Description
+be2ba1,credit,,100.00,2026-01-01,
+cdd3da,credit,,100.00,2026-01-01,
+33c7b4,credit,,100.00,2026-01-01,
+ce9c8a,debit,,50.00,2026-01-01,
+5a2ef1,credit,,0.50,2026-01-01,
+7c3de9,credit,,5.00,2026-01-01,
+f6e2e9,credit,food,100.00,2026-01-01,test
+9cd1d3,credit,food,200.00,2026-06-01,test2
+c6ca2f,credit,food,100.00,2026-01-01,test

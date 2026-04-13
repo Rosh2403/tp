@@ -1,0 +1,9 @@
+HashID,Type,Category,Amount,Date,Description
+5a1c63,credit,food,100.00,2026-03-01,test1
+220f05,credit,food,100.00,2026-03-01,test1
+3cb0a2,credit,food,100.00,2026-03-01,test1
+230606,credit,a=b=c,200.00,9999-12-31,hello=world
+49253d,credit,food,100.00,2026-03-01,test
+b1b92d,credit,food,0.00,2026-03-01,
+bc8c52,credit,food,0.00,2026-03-01,
+46dc10,credit,food,0.01,2026-03-01,

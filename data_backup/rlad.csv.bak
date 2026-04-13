@@ -1,0 +1,4 @@
+HashID,Type,Category,Amount,Date,Description
+2d5f61,debit,food,50.00,2026-01-10,Hawker lunch
+d98df0,credit,salary,3000.00,2026-01-15,Monthly pay
+b47760,debit,transport,2.50,2026-01-20,MRT ride

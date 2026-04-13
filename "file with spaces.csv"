@@ -1,0 +1,8 @@
+HashID,Type,Category,Amount,Date,Description
+3efda8,credit,,100.00,0000-01-01,
+189f46,credit,,100.00,9999-12-31,
+b95635,credit,,1.00,2026-01-01,
+a6ee56,credit,,10000000.00,2026-01-01,
+5022f3,credit,,1.23,2026-01-01,
+ff83a2,credit,,100.00,2026-01-01,
+f6ee46,debit,food,100.00,2026-01-01,test
