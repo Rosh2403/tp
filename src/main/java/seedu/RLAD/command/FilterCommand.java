@@ -295,7 +295,7 @@ public class FilterCommand extends Command {
 
             switch (key) {
             case "type":
-                if (!value.equals("credit") && !value.equals("debit")) {
+                if (!value.equalsIgnoreCase("credit") && !value.equalsIgnoreCase("debit")) {
                     throw new RLADException("Invalid type: '" + value
                             + "'. Use 'credit' or 'debit'.");
                 }
