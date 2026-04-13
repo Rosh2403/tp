@@ -396,6 +396,23 @@ class FilterCommandTest {
     }
 
     @Test
+    public void applyColonFilters_invalidType_throwsException() {
+        ArrayList<Transaction> transactions = createSampleTransactions();
+        assertThrows(RLADException.class,
+                () -> FilterCommand.applyColonFilters(transactions, "type:invalid"));
+    }
+
+    @Test
+    public void applyColonFilters_uppercaseType_filtersCorrectly() throws RLADException {
+        ArrayList<Transaction> transactions = createSampleTransactions();
+        java.util.List<Transaction> results =
+                FilterCommand.applyColonFilters(transactions, "type:CREDIT");
+        assertEquals(2, results.size());
+        for (Transaction t : results) {
+            assertEquals("credit", t.getType());
+        }
+    }
+        
     public void applyColonFilters_minGreaterThanMax_throwsException() {
         ArrayList<Transaction> transactions = createSampleTransactions();
         assertThrows(RLADException.class,
