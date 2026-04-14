@@ -424,6 +424,7 @@ classDiagram
 
     ListCommand ..> FilterCommand : uses
 ```
+<div style="page-break-after: always;"></div>
 
 #### Storage Component
 
@@ -502,6 +503,7 @@ Input: 'add debit 15.50 2026-03-05 food "Chicken rice at hawker"'
 → description = "Chicken rice at hawker" (preserves spaces)
 ```
 
+<div style="page-break-after: always;"></div>
 
 **Sequence:**
 
@@ -1301,7 +1303,6 @@ RLAD lets users record, filter, sort, and summarize financial transactions entir
 | v2.0    | user          | clear all transaction data with confirmation               | start fresh without accidental data loss          |
 
 ---
-<div style="page-break-after: always;"></div>
 
 ## Appendix C: Non-Functional Requirements
 
