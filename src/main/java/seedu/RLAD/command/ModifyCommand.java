@@ -37,6 +37,13 @@ public class ModifyCommand extends Command {
         }
 
         Map<String, String> updates = parseFieldValuePairs(tokens.subList(1, tokens.size()));
+
+        // This if statement fixes the failing test 'execute_noFields_throwsException'
+        if (updates.isEmpty()) {
+            throw new RLADException("No fields to update. "
+                    + "Usage: modify <hashID> field=value [field=value ...]");
+        }
+
         Transaction updated = buildUpdatedTransaction(existing, updates);
 
         transactions.updateTransaction(id, updated);
@@ -70,7 +77,9 @@ public class ModifyCommand extends Command {
     }
 
     private String removeSurroundingQuotes(String token) {
-        if (token == null) return null;
+        if (token == null) {
+            return null;
+        }
         String cleaned = token.trim();
         while (cleaned.length() >= 2 && cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
             cleaned = cleaned.substring(1, cleaned.length() - 1);
@@ -90,7 +99,8 @@ public class ModifyCommand extends Command {
         return updates;
     }
 
-    private Transaction buildUpdatedTransaction(Transaction existing, Map<String, String> updates) throws RLADException {
+    private Transaction buildUpdatedTransaction(Transaction existing, Map<String, String> updates)
+            throws RLADException {
         Set<String> validFields = Set.of("type", "amount", "date", "category", "description");
         for (String key : updates.keySet()) {
             if (!validFields.contains(key)) {
@@ -101,17 +111,21 @@ public class ModifyCommand extends Command {
         String type = updates.getOrDefault("type", existing.getType());
         String category = updates.getOrDefault("category", existing.getCategory());
 
-        // Guard clause for numerical categories
         if (category != null && category.trim().matches("-?\\d+(\\.\\d+)?")) {
             throw new RLADException("Category cannot be purely numerical.");
         }
 
-        // Using your shared AmountValidator
-        double amount = updates.containsKey("amount") ?
-                AmountValidator.parseAndValidate(updates.get("amount")) : existing.getAmount();
+        double amount = updates.containsKey("amount")
+                ? AmountValidator.parseAndValidate(updates.get("amount")) : existing.getAmount();
 
-        LocalDate date = updates.containsKey("date") ?
-                parseDate(updates.get("date")) : existing.getDate();
+        LocalDate date = existing.getDate();
+        if (updates.containsKey("date")) {
+            try {
+                date = LocalDate.parse(updates.get("date").trim());
+            } catch (DateTimeParseException e) {
+                throw new RLADException("Invalid date format. Use YYYY-MM-DD.");
+            }
+        }
 
         if (!type.equals("credit") && !type.equals("debit")) {
             throw new RLADException("Type must be 'credit' or 'debit'.");
@@ -123,19 +137,11 @@ public class ModifyCommand extends Command {
         return updated;
     }
 
-    private LocalDate parseDate(String dateStr) throws RLADException {
-        try {
-            return LocalDate.parse(dateStr.trim());
-        } catch (DateTimeParseException e) {
-            throw new RLADException("Invalid date format. Use YYYY-MM-DD.");
-        }
-    }
-
     private String formatTransaction(Transaction t) {
+        String cat = (t.getCategory() == null || t.getCategory().isEmpty()) ? "(none)" : t.getCategory();
+        String desc = (t.getDescription() == null || t.getDescription().isEmpty()) ? "(none)" : t.getDescription();
         return String.format("%s | $%,.2f | %s | %s | %s",
-                t.getType().toUpperCase(), t.getAmount(), t.getDate(),
-                (t.getCategory() == null || t.getCategory().isEmpty()) ? "(none)" : t.getCategory(),
-                (t.getDescription() == null || t.getDescription().isEmpty()) ? "(none)" : t.getDescription());
+                t.getType().toUpperCase(), t.getAmount(), t.getDate(), cat, desc);
     }
 
     private String getUsageHelp() {
@@ -147,4 +153,3 @@ public class ModifyCommand extends Command {
         return rawArgs != null && !rawArgs.trim().isEmpty();
     }
 }
-

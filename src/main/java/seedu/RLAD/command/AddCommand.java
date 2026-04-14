@@ -26,9 +26,9 @@ public class AddCommand extends Command {
         }
 
         if (hasUnclosedQuotes(rawArgs)) {
-            throw new RLADException("Unclosed quote in command. Missing closing quote (\").\n" +
-                    "Use quotes for multi-word descriptions or categories.\n" +
-                    "Example: add debit 15.50 2026-04-12 food \"Lunch at hawker\"");
+            throw new RLADException("Unclosed quote in command. Missing closing quote (\").\n"
+                    + "Use quotes for multi-word descriptions or categories.\n"
+                    + "Example: add debit 15.50 2026-04-12 food \"Lunch at hawker\"");
         }
 
         List<String> parts = parseWithQuotes(rawArgs.trim());
@@ -38,7 +38,6 @@ public class AddCommand extends Command {
         }
 
         String type = parseAndValidateType(parts.get(0));
-        // Using your shared AmountValidator
         double amount = AmountValidator.parseAndValidate(parts.get(1));
         LocalDate date = parseAndValidateDate(parts.get(2));
 
@@ -47,10 +46,9 @@ public class AddCommand extends Command {
 
         if (parts.size() >= 4) {
             category = parts.get(3);
-            // Guard clause to prevent purely numerical categories
             if (category != null && category.trim().matches("-?\\d+(\\.\\d+)?")) {
-                throw new RLADException("Category cannot be purely numerical.\n" +
-                        "Mixed alphanumerics (e.g., '1st Meeting') are acceptable.");
+                throw new RLADException("Category cannot be purely numerical.\n"
+                        + "Mixed alphanumerics (e.g., '1st Meeting') are acceptable.");
             }
         }
         if (parts.size() >= 5) {
@@ -89,7 +87,9 @@ public class AddCommand extends Command {
     }
 
     private String removeSurroundingQuotes(String token) {
-        if (token == null) return null;
+        if (token == null) {
+            return null;
+        }
         String cleaned = token.trim();
         while (cleaned.length() >= 2 && cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
             cleaned = cleaned.substring(1, cleaned.length() - 1);
@@ -100,7 +100,9 @@ public class AddCommand extends Command {
     private boolean hasUnclosedQuotes(String input) {
         int quoteCount = 0;
         for (char c : input.toCharArray()) {
-            if (c == '"') quoteCount++;
+            if (c == '"') {
+                quoteCount++;
+            }
         }
         return quoteCount % 2 != 0;
     }
@@ -125,11 +127,11 @@ public class AddCommand extends Command {
         String cat = (category == null || category.trim().isEmpty()) ? "(none)" : category;
         String desc = (description == null || description.trim().isEmpty()) ? "(none)" : "\"" + description + "\"";
 
-        ui.showResult(String.format(
-                "✅ Transaction added successfully!\n   ID: %s\n   %s: $%,.2f on %s\n   Category: %s\n   Description: %s",
+        String message = String.format("✅ Transaction added successfully!\n   ID: %s\n"
+                        + "   %s: $%,.2f on %s\n   Category: %s\n   Description: %s",
                 transaction.getHashId(), transaction.getType().toUpperCase(),
-                transaction.getAmount(), transaction.getDate(), cat, desc
-        ));
+                transaction.getAmount(), transaction.getDate(), cat, desc);
+        ui.showResult(message);
     }
 
     private String getUsageHelp() {
@@ -141,4 +143,3 @@ public class AddCommand extends Command {
         return rawArgs != null && !rawArgs.trim().isEmpty();
     }
 }
-
