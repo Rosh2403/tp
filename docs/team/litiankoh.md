@@ -1,6 +1,6 @@
 # Koh Li Tian - Project Portfolio Page
 
-## Overview
+## **Overview**
 
 **Project:** Record Losses And Debt (RLAD)
 
@@ -8,27 +8,29 @@ RLAD is a minimalist **Command-Line Interface (CLI) finance tracker** built for 
 efficiency of a terminal. Unlike bloated apps or complex spreadsheets, RLAD allows users to track income/expenses, 
 set budget goals, and get instant summaries with simple, intuitive commands. 
 My primary role was to architect and implement the **budgeting feature**, which forms the core of RLAD's financial planning capabilities.
----
-## Summary of Contributions
+
+## **Summary of Contributions**
 
 **Primary Role:** Architect and implementor of the core adding transactions and budgeting feature.
 
 **Code contributed:** [RepoSense Link](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=litiankoh&breakdown=true)
 
 ---
-### Enhancements implemented
+
+### **Enhancements implemented**
 
 Here is a summary of my key enhancements to RLAD:
 
-| Enhancement | Description | Key Technical Highlights |
-| :--- | :--- | :--- |
-| **AddCommand & Argument Parsing** | Built the foundational command for adding transactions with a position-based parser — no flags needed. | - Position-based parsing: `type`, `amount`, `date`, `category`, `description` in natural order<br>- Quote handling for multi-word descriptions<br>- `add debit 15.50 2026-03-05 food` instead of `add --type debit --amount 15.50 --date 2026-03-05 --category food` |
-| **Budget Management System** | Full suite of commands (`set`, `view`, `edit`, `delete`) for monthly budget goals across 12 categories. | - Designed `MonthlyBudget` and `BudgetManager` classes for storage and calculations<br>- Integrated with `TransactionManager` for real-time spend tracking<br>- Simplified syntax: `budget set 2026-03 1 500` instead of `budget set --month 2026-03 --category 1 --amount 500` |
-| **Progressive Budget Notifications** | Real-time alerts at 80%, 90%, and 100% of budget limits. | - `Map<String, Set<Integer>>` tracks notifications per `(month, category)` to prevent duplicates<br>- Positive messages for Savings; warnings for all other categories |
+| Enhancement | Description | Key Technical Highlights                                                                                                                                                                                                                                                                                                      |
+| :--- | :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **AddCommand & Argument Parsing** | Built the foundational command for adding transactions with a position-based parser — no flags needed. | - Position-based parsing: `type`, `amount`, `date`, `category`, `description` in natural order<br>- Quote handling for multi-word categories and descriptions<br>- `add debit 15.50 2026-03-05 "NUS food" "Delicious"` instead of `add --type debit --amount 15.50 --date 2026-03-05 --category food --description Delicious` |
+| **Budget Management System** | Full suite of commands (`set`, `view`, `edit`, `delete`) for monthly budget goals across 12 categories. | - Designed `MonthlyBudget` and `BudgetManager` classes for storage and calculations<br>- Integrated with `TransactionManager` for real-time spend tracking<br>- Simplified syntax: `budget set 2026-03 1 500` instead of `budget set --month 2026-03 --category 1 --amount 500`                                               |
+| **Progressive Budget Notifications** | Real-time alerts at 80%, 90%, and 100% of budget limits. | - `Map<String, Set<Integer>>` tracks notifications per `(month, category)` to prevent duplicates<br>- Positive messages for Savings; warnings for all other categories                                                                                                                                                        |
 
 ---
+<div style="page-break-after: always;"></div>
 
-### Contributions to User Experience Design
+### **Contributions to User Experience Design**
 
 I led the effort to **redesign the entire CLI syntax** from flag-based to position-based commands, making RLAD significantly more user-friendly:
 
@@ -38,17 +40,21 @@ add --type debit --amount 15.50 --date 2026-03-05 --category food --description 
 ```
 **After (position-based):**
 ```
-add debit 15.50 2026-03-05 food "Chicken rice"
+add debit 15.50 2026-03-05 "food" "Chicken rice"
 ```
+
 ---
-### Contributions to the User Guide (UG)
+
+### **Contributions to the User Guide (UG)**
 
 I authored and maintained the documentation for the `budget` feature, ensuring it was clear, comprehensive, and user-friendly. My contributions include:
 
 - **Added UG for BudgetManager:** Wrote detailed sections for all budget commands (`set`, `view`, `edit`, `delete`) with examples, input formats, and expected outputs.
 - **Added UG for Budget Notification Logic:** Documented the progressive notification system (80%, 90%, 100% thresholds), clearly differentiating between Savings (positive) and other categories (warnings).
+
 ---
-### Contributions to the Developer Guide (DG)
+
+### **Contributions to the Developer Guide (DG)**
 
 | Section | Contribution                                                                                                                                                        |
 |---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -63,7 +69,7 @@ I authored and maintained the documentation for the `budget` feature, ensuring i
 
 ---
 
-### Team-Based & Beyond-Project Contributions
+### **Team-Based & Beyond-Project Contributions**
 
 - **Essential Code Foundation:** Created the `AddCommand` with position-based parsing, which served as a template for all other commands, enabling the team to quickly implement consistent, user-friendly commands.
 - **Leadership:** Led the team discussion. Managed the project's workflow and ensuring all team members had clear, well-defined tasks.
